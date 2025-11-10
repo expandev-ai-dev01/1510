@@ -62,11 +62,16 @@ export async function dbRequest(
       if (resultSetNames && resultSetNames.length > 0) {
         const namedResults: Record<string, IRecordSet<any>> = {};
         resultSetNames.forEach((name, index) => {
-          namedResults[name] = { recordset: result.recordsets[index] || [] };
+          if (Array.isArray(result.recordsets)) {
+            namedResults[name] = { recordset: result.recordsets[index] || [] };
+          }
         });
         return namedResults;
       }
-      return result.recordsets.map((rs) => ({ recordset: rs }));
+      if (Array.isArray(result.recordsets)) {
+        return result.recordsets.map((rs: any) => ({ recordset: rs }));
+      }
+      return [];
     default:
       throw new Error('Invalid ExpectedReturn type');
   }
